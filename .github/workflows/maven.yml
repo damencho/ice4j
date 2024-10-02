@@ -51,7 +51,7 @@ jobs:
         with:
           tag: ${{process.env.TAG_NAME}}
           tag_exists_error: false
-          message: "Automated tag"
+          message: "Automated tag by github action"
 
       - name: Set Dist Version
         run: |
