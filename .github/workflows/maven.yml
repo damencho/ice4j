@@ -19,7 +19,7 @@ jobs:
 
     strategy:
       matrix:
-        java: [ 11, 17 ]
+        java: [ 11 ]
 
     name: Java ${{ matrix.java }}
 
@@ -39,17 +39,18 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y libxml2-utils
-      - name: Set Dist Version
+      - name: Set tag Version
+        id: sets-tag-version
         run: |
           MVNVER=$(xmllint --xpath "/*[local-name()='project']/*[local-name()='version']/text()" pom.xml)
           TAG_NAME="v${MVNVER/-SNAPSHOT/}"
           echo "Tag name: ${TAG_NAME}"
-          echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
+          echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_OUTPUT
 
       - name: Create Tag
         uses: rickstaa/action-create-tag@v1.7.2
         with:
-          tag: "${TAG_NAME}"
+          tag: ${{ steps.sets-tag-version.outputs.TAG_NAME }}
           tag_exists_error: false
           message: "Automated tag"
 
