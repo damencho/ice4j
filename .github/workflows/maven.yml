@@ -34,6 +34,39 @@ jobs:
           java-version: ${{ matrix.java }}
           cache: maven
 
+      - name: Install xmllint
+        shell: bash
+        run: |
+          sudo apt update
+          sudo apt install -y libxml2-utils
+      - name: Set Dist Version
+        run: |
+          MVNVER=$(xmllint --xpath "/*[local-name()='project']/*[local-name()='version']/text()" pom.xml)
+          TAG_NAME="v${MVNVER/-SNAPSHOT/}"
+          echo "Tag name: ${TAG_NAME}"
+          echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
+
+      - name: Create Tag
+        uses: rickstaa/action-create-tag@v1.7.2
+        with:
+          tag: ${{process.env.TAG_NAME}}
+          tag_exists_error: false
+          message: "Automated tag"
+
+      - name: Set Dist Version
+        run: |
+          MVNVER=$(xmllint --xpath "/*[local-name()='project']/*[local-name()='version']/text()" pom.xml)
+          TAG_NAME="v${MVNVER/-SNAPSHOT/}"
+          echo "Tag name: ${TAG_NAME}"
+          echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
+
+      - name: Create Tag
+        uses: rickstaa/action-create-tag@v1.7.2
+        with:
+          tag: ${{process.env.TAG_NAME}}
+          tag_exists_error: false
+          message: "Automated tag"
+
       - name: Build and test with Maven
         run: mvn -B -Dgpg.skip -Drelease=true -Pcoverage verify
 
